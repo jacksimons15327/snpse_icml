@@ -14,8 +14,8 @@ Repository for the paper "Sequential Neural Score Estimation: Likelihood-Free In
   - `main_array.py` is for running array jobs on Slurm.
 - **Configuration:** Default configurations are located in `config.py`.
   - Note that the optimal configurations for sequential and non-sequential runs will differ.
-  - `config.score_network.use_energy` refers to modeling the score-network as an energy model (see Appendix G of the paper). This greatly speeds up the truncated proposal prior.
-  - `config.score_network.t_sample_size` refers to the number of sweeps of the entire dataset before early stopping criteria are computed. Empirically, `~10` sweeps perform well, though this may slow down the code.
+  - `config.score_network.use_energy` refers to parameterising the score-network as an energy model (see Appendix G of the paper). This greatly speeds up the truncated proposal prior.
+  - `config.score_network.t_sample_size` refers to the number of sweeps of the entire dataset before early stopping criteria are computed. Empirically, `~10` performs well, though this will slow down the code.
 
 ## Installation
 
@@ -23,6 +23,4 @@ To set up the environment, run:
 ```sh
 conda create --name snpse --file requirements.txt
 conda activate snpse
-
-
-
+```
