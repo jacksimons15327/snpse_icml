@@ -2,7 +2,7 @@
 
 Repository for the paper "Sequential Neural Score Estimation: Likelihood-Free Inference with Conditional Score-Based Diffusion Models," published at ICML 2024.
 
-[TO DO: include link to published paper.]
+The paper can be found [here](https://openreview.net/forum?id=8viuf9PdzU).
 
 ## Notes
 
