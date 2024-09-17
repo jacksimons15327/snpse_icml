@@ -8,6 +8,7 @@ import torch
 from task_utils import get_sim_and_prior_from_sbibm
 from model import NCMLP
 from model_energy import NCMLP_ENERGY
+from model_energy_resnet import NCResnet
 from sde import get_sde
 from training import train_score_network
 from cnf import CNF
@@ -38,7 +39,10 @@ def run(config, key):
         key, subkey_model, subkey_training = jr.split(key, 3)
         
         if config.score_network.use_energy:
-            model = NCMLP_ENERGY(subkey_model, config)
+            if config.resnet.use:
+                model = NCResnet(subkey_model, config)
+            else:
+                model = NCMLP_ENERGY(subkey_model, config)
         else:
             model = NCMLP(subkey_model, config)
         model, ds_means, ds_stds = train_score_network(config, model, sde, parameter_ds, data_ds, subkey_training)

@@ -22,7 +22,7 @@ def get_default_configs(
     algorithm.x_obs_jnp = jnp.array(algorithm.task.get_observation(obs_number)).reshape(-1,)
     algorithm.posterior_samples_torch = algorithm.task.get_reference_posterior_samples(obs_number)
 
-    # score_network
+     # score_network
     config.score_network = score_network = ml_collections.ConfigDict()
     score_network.use_energy = True
     score_network.width = 256
@@ -33,13 +33,22 @@ def get_default_configs(
     score_network.x_embed_dim = max(30, 4*algorithm.task.dim_data)
     score_network.use_weighted_loss = True
     score_network.t_sample_size = 10
-    # score_network.use_layer_norm = False
+    
+    # resnet
+    config.resnet = resnet = ml_collections.ConfigDict()
+    resnet.use = False
+    resnet.num_blocks = 3
+    resnet.widening_factor = 3
+    resnet.activation = jax.nn.silu
+    resnet.t_embed_dim = 128
+    resnet.theta_embed_dim = max(30, 4*algorithm.task.dim_parameters)
+    resnet.x_embed_dim = max(30, 4*algorithm.task.dim_data)
 
     # sde
     config.sde = sde = ml_collections.ConfigDict()
     sde.name = "vpsde"
     sde.T = 1.0
-    sde.beta_min = 0.1
+    sde.beta_min = 0.01
     sde.beta_max = 10.0
     sigma_min, sigma_max = get_sigma_limits(dataset)
     sde.sigma_min = sigma_min

@@ -20,21 +20,21 @@ import pandas as pd
 import itertools
 
 dataset_list = [
-    "gaussian_linear_uniform",
+    # "gaussian_linear_uniform",
     "slcp",
-    # "lotka_volterra",
-    # "sir",
+    "lotka_volterra",
+    "sir",
     "two_moons",
-    "gaussian_mixture",
-    "gaussian_linear",
-    "bernoulli_glm"
+    # "gaussian_mixture",
+    # "gaussian_linear",
+    # "bernoulli_glm"
 ]
-sbibm_obs_number_list = [1, 2, 3, 4, 5, 6, 7, 8, 9]#, 10]
+sbibm_obs_number_list = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 simulation_budget_list = [1000, 10000, 100000]
 batch_size_list = [None]
-lr_list = [5e-5, 1e-4, 5e-4]
-num_rounds_list = [1,2]
-sde_name_list = ["vesde", "vpsde"]
+lr_list = [1e-4]
+num_rounds_list = [1,5]
+sde_name_list = ["vpsde"]
 epsilon_list = [5e-4]
 max_iters_list = [10000]
 
@@ -79,19 +79,31 @@ max_iters = parameters[8]
 
 
 
-config = get_default_configs(dataset = dataset, num_rounds=num_rounds, obs_number=sbibm_obs_number) #0,1,5
+config = get_default_configs(simulation_budget = int(simulation_budget), dataset = dataset, num_rounds=num_rounds, obs_number=sbibm_obs_number) #2,0,1,5
 config.algorithm.compute_c2st_intermediate_rounds = False
-config.algorithm.simulation_budget = int(simulation_budget) #2
-config.optim.max_patience = 1000 
+
 if batch_size is not None:
     config.optim.batch_size = batch_size #3
+
 config.optim.lr = lr #4
-config.sde.name = sde_name #5
-config.sampling.epsilon = epsilon #6
-config.optim.max_iters = int(max_iters) #7
+config.sde.name = sde_name #6
+config.sampling.epsilon = epsilon #7
+
+config.optim.max_iters = int(max_iters) #8
+config.optim.max_patience = 2000 
+
+config.resnet.use = True
+config.score_network.use_energy = True
+
+if simulation_budget <= 1000:
+    config.score_network.t_sample_size = 10
+elif simulation_budget <= 10000:
+    config.score_network.t_sample_size = 5
+else:
+    config.score_network.t_sample_size = 1
 
 st = time.time()
-cnf, approx_posterior_samples, c2sts, theta, x = run(config, key)
+cnf, approx_posterior_samples, c2sts, theta, x, sbcc_props = run(config, key)
 end = time.time()
 print(f"The run took {end-st} seconds")
 
@@ -99,7 +111,7 @@ print(f"The run took {end-st} seconds")
 from os.path import exists
 import pandas as pd
 
-path_for_save = "/user/work/js15327/snpse-jax/"
+path_for_save = "/user/work/js15327/snpse-jax-energy-thesis/"
 if not exists(path_for_save):
     os.system(f"mkdir {path_for_save[:-1]}")
 
